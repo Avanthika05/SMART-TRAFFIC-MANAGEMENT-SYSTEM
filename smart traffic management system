@@ -1,0 +1,103 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.Random;
+
+public class TrafficLightController extends Frame implements ActionListener {
+    private String lightStatus = "RED";
+    private int timer = 10; // Default time for each signal
+    private Timer awtTimer;
+    private Random random;
+
+    // Constructor to set up the UI
+    public TrafficLightController() {
+        super("Smart Traffic Management System");
+        random = new Random();
+        setSize(400, 500);
+        setLayout(new BorderLayout());
+        setVisible(true);
+        setBackground(Color.GRAY);
+
+        // Timer for traffic light control
+        awtTimer = new Timer(1000, this);
+        awtTimer.start();
+
+        // Window close listener
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                awtTimer.stop();
+                dispose();
+                System.exit(0);
+            }
+        });
+    }
+
+    // Method to adjust timings dynamically
+    private void adjustTimer() {
+        timer = random.nextInt(6) + 5; // Randomly setting time between 5-10 seconds
+    }
+
+    // Action handler for the timer
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (timer > 0) {
+            timer--;
+        } else {
+            // Change light status when timer hits zero
+            switch (lightStatus) {
+                case "RED":
+                    lightStatus = "GREEN";
+                    adjustTimer();
+                    break;
+                case "GREEN":
+                    lightStatus = "YELLOW";
+                    adjustTimer();
+                    break;
+                case "YELLOW":
+                    lightStatus = "RED";
+                    adjustTimer();
+                    break;
+            }
+        }
+        repaint(); // Redraw the UI with updated values
+    }
+
+    // Paint method to draw the traffic light UI
+    @Override
+    public void paint(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillRect(150, 100, 100, 300); // Traffic light body
+
+        // Draw lights
+        if (lightStatus.equals("RED")) {
+            g.setColor(Color.RED);
+        } else {
+            g.setColor(Color.DARK_GRAY);
+        }
+        g.fillOval(175, 120, 50, 50); // Red light
+
+        if (lightStatus.equals("YELLOW")) {
+            g.setColor(Color.YELLOW);
+        } else {
+            g.setColor(Color.DARK_GRAY);
+        }
+        g.fillOval(175, 190, 50, 50); // Yellow light
+
+        if (lightStatus.equals("GREEN")) {
+            g.setColor(Color.GREEN);
+        } else {
+            g.setColor(Color.DARK_GRAY);
+        }
+        g.fillOval(175, 260, 50, 50); // Green light
+
+        // Display timer
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Time: " + timer + "s", 160, 400);
+    }
+
+    // Main method to launch the application
+    public static void main(String[] args) {
+        new TrafficLightController();
+    }
+}
